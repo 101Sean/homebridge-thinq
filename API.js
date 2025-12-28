@@ -16,23 +16,18 @@ class ThinQConnectAPI {
 
     async fetchDevices() {
         try {
-            const res = await this.client.get('/v1/devices');
+            const res = await this.client.get('/v1/devices', { timeout: 5000 });
+
+            console.log('[ThinQ] 서버 응답 수신 완료');
 
             if (res.data && res.data.result && res.data.result.devices) {
                 return res.data.result.devices;
-            } else if (res.data && res.data.devices) {
-                return res.data.devices;
             }
-
             return [];
-        } catch (error) {
-            if (error.response) {
-                console.error('LG API 서버 에러 상태코드:', error.response.status);
-                console.error('LG API 에러 상세 내용:', JSON.stringify(error.response.data, null, 2));
-            } else {
-                console.error('네트워크 또는 기타 에러:', error.message);
-            }
-            throw error;
+        } catch (e) {
+            console.error(`[ThinQ] 서버 통신 실패: ${e.response?.status || e.message}`);
+            if (e.response) console.error(`[ThinQ] 상세 에러: ${JSON.stringify(e.response.data)}`);
+            return [];
         }
     }
 
