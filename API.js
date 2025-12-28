@@ -17,16 +17,17 @@ class ThinQConnectAPI {
     async fetchDevices() {
         try {
             const res = await this.client.get('/v1/devices', { timeout: 5000 });
-
             console.log('[ThinQ] 서버 응답 수신 완료');
 
             if (res.data && res.data.result && res.data.result.devices) {
+                res.data.result.devices.forEach(d => {
+                    console.log(`[장치발견] 이름: ${d.alias}, 타입: ${d.deviceType}, ID: ${d.deviceId}`);
+                });
                 return res.data.result.devices;
             }
             return [];
         } catch (e) {
             console.error(`[ThinQ] 서버 통신 실패: ${e.response?.status || e.message}`);
-            if (e.response) console.error(`[ThinQ] 상세 에러: ${JSON.stringify(e.response.data)}`);
             return [];
         }
     }
